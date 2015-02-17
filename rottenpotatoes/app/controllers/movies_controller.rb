@@ -1,4 +1,5 @@
 class MoviesController < ApplicationController
+   attr_accessor :checked_rating
 
   def show
     id = params[:id] # retrieve movie ID from URI route
@@ -7,7 +8,18 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    @all_ratings = Movie.all_ratings
+    @sort = params[:sort]
+    if (params[:ratings] != nil)
+     @checked_rating = params[:ratings].keys
+    else 
+     @checked_rating = @all_ratings
+    end
+    if (@sort == "title" || @sort == "release_date")
+	@movies = Movie.where("rating IN (?)", @checked_rating).order(params[:sort])
+    else 
+	@movies = Movie.where("rating IN (?)", @checked_rating)
+    end
   end
 
   def new
