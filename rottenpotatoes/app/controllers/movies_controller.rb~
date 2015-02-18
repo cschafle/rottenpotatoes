@@ -11,7 +11,7 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.all_ratings
     @sort = params[:sort]
     if (params[:ratings] != nil)
-     @checked_rating = [params[:ratings].keys]
+     @checked_rating = params[:ratings].keys
     else 
      @checked_rating = @all_ratings
     end

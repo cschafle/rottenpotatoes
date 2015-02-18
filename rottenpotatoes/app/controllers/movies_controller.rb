@@ -8,6 +8,7 @@ class MoviesController < ApplicationController
   end
 
   def index
+    #if i click sort by title should ratings be presevered? 
     @all_ratings = Movie.all_ratings
     @sort = params[:sort]
     if (params[:ratings] != nil)
