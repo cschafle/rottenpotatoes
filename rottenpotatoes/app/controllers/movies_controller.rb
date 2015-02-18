@@ -8,26 +8,36 @@ class MoviesController < ApplicationController
   end
 
   def index
+    #reset_session
     @all_ratings = Movie.all_ratings
     @sort = params[:sort]
+    #if (params[:sort] == nil && params[:ratings] == nil && session[:ratings] == nil)
+    #    session[:ratings] = {"G" => "1","PG" => "1","PG-13" => "1","R" => "1"} 
+    #    redirect_to movies_path(:ratings => session[:ratings])
+    #    return
+    #end
+    #if (params[:sort] == nil && session[:sort] == nil && params[:ratings] == nil && session[:ratings] == nil)
+	#moveon = 0
     if ((params[:sort] == nil && session[:sort] != nil) || (params[:ratings] == nil && session[:ratings] != nil))
-        redirect_to movies_path(:sort => session[:sort], :ratings => session[:ratings])
-    elsif (params[:ratings] != nil)
-        @checked_rating = params[:ratings].keys
+        redirect_to movies_path(:sort => params[:sort] || session[:sort], :ratings => params[:ratings] || session[:ratings])
+    end
+    if (params[:ratings] != nil)
+        @checked_rating = params[:ratings]
         session[:ratings] = params[:ratings]
     else 
-        @checked_rating = @all_ratings
+        @checked_rating = {"G"=>"1", "PG"=>"1", "PG-13" => "1","R" => "1"} 
     end
     if (@sort == "title" || @sort == "release_date")
         session[:sort] = params[:sort]
-	@movies = Movie.where("rating IN (?)", @checked_rating).order(params[:sort])
-    else 
-	@movies = Movie.where("rating IN (?)", @checked_rating)
+	@movies = Movie.where("rating IN (?)", @checked_rating.keys).order(params[:sort])
+    else
+        @movies = Movie.where("rating IN (?)", @checked_rating.keys)
     end
   end
 
   def new
     # default: render 'new' template
+    reset_session
   end
 
   def create
