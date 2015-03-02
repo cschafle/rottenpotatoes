@@ -11,13 +11,6 @@ class MoviesController < ApplicationController
     #reset_session
     @all_ratings = Movie.all_ratings
     @sort = params[:sort]
-    #if (params[:sort] == nil && params[:ratings] == nil && session[:ratings] == nil)
-    #    session[:ratings] = {"G" => "1","PG" => "1","PG-13" => "1","R" => "1"} 
-    #    redirect_to movies_path(:ratings => session[:ratings])
-    #    return
-    #end
-    #if (params[:sort] == nil && session[:sort] == nil && params[:ratings] == nil && session[:ratings] == nil)
-	#moveon = 0
     if ((params[:sort] == nil && session[:sort] != nil) || (params[:ratings] == nil && session[:ratings] != nil))
         redirect_to movies_path(:sort => params[:sort] || session[:sort], :ratings => params[:ratings] || session[:ratings])
     end
@@ -29,7 +22,7 @@ class MoviesController < ApplicationController
     end
     if (@sort == "title" || @sort == "release_date")
         session[:sort] = params[:sort]
-	@movies = Movie.where("rating IN (?)", @checked_rating.keys).order(params[:sort])
+	      @movies = Movie.where("rating IN (?)", @checked_rating.keys).order(params[:sort])
     else
         @movies = Movie.where("rating IN (?)", @checked_rating.keys)
     end
@@ -62,6 +55,17 @@ class MoviesController < ApplicationController
     @movie.destroy
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
+  end
+
+  def similar_movies
+    id = params[:id] # retrieve movie ID from URI route
+    director = params[:director]
+    @movie = Movie.find(id) # look up movie by unique ID
+    @similar_movies = Movie.find_all_by_director(@movie.director)
+    if (@movie.director == "") || (@movie.director.nil?)
+      flash[:notice] = "'#{@movie.title}' has no director info"
+      redirect_to '/movies'
+    end
   end
 
 end

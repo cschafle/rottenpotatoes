@@ -1,5 +1,7 @@
 Rottenpotatoes::Application.routes.draw do
 resources :movies
+
+  match 'movies/similar_movies/:id/' => 'movies#similar_movies', :as => :similar_movies
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
